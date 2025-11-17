@@ -1,0 +1,2 @@
+# 114971006_hw2
+NCCU 114971006 GenAI Assignment 2
