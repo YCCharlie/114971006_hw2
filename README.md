@@ -1,144 +1,46 @@
-# 114971006_hw2
-NCCU 114971006 GenAI Assignment 2
+# 國立政治大學 - 作業二：傳統 NLP vs 現代 AI 文本處理方法比較
 
+### 項目摘要
+[cite_start]本項目實作了 TF-IDF、規則分類等傳統 NLP 技術，並與 GPT-4o 模型進行相同任務的實作與量化比較 [cite: 207, 217, 218][cite_start]。目標是比較兩種技術在速度、成本和語義理解上的核心差異 [cite: 219]。
 
-輸出結果如下：
-Requirement already satisfied: jieba in /usr/local/lib/python3.12/dist-packages (0.42.1)
-Requirement already satisfied: scikit-learn in /usr/local/lib/python3.12/dist-packages (1.6.1)
-Requirement already satisfied: numpy in /usr/local/lib/python3.12/dist-packages (2.0.2)
-Requirement already satisfied: TCSP in /usr/local/lib/python3.12/dist-packages (0.0.9)
-Requirement already satisfied: scipy>=1.6.0 in /usr/local/lib/python3.12/dist-packages (from scikit-learn) (1.16.3)
-Requirement already satisfied: joblib>=1.2.0 in /usr/local/lib/python3.12/dist-packages (from scikit-learn) (1.5.2)
-Requirement already satisfied: threadpoolctl>=3.1.0 in /usr/local/lib/python3.12/dist-packages (from scikit-learn) (3.6.0)
-Requirement already satisfied: openai in /usr/local/lib/python3.12/dist-packages (1.109.1)
-Requirement already satisfied: anyio<5,>=3.5.0 in /usr/local/lib/python3.12/dist-packages (from openai) (4.11.0)
-Requirement already satisfied: distro<2,>=1.7.0 in /usr/local/lib/python3.12/dist-packages (from openai) (1.9.0)
-Requirement already satisfied: httpx<1,>=0.23.0 in /usr/local/lib/python3.12/dist-packages (from openai) (0.28.1)
-Requirement already satisfied: jiter<1,>=0.4.0 in /usr/local/lib/python3.12/dist-packages (from openai) (0.12.0)
-Requirement already satisfied: pydantic<3,>=1.9.0 in /usr/local/lib/python3.12/dist-packages (from openai) (2.11.10)
-Requirement already satisfied: sniffio in /usr/local/lib/python3.12/dist-packages (from openai) (1.3.1)
-Requirement already satisfied: tqdm>4 in /usr/local/lib/python3.12/dist-packages (from openai) (4.67.1)
-Requirement already satisfied: typing-extensions<5,>=4.11 in /usr/local/lib/python3.12/dist-packages (from openai) (4.15.0)
-Requirement already satisfied: idna>=2.8 in /usr/local/lib/python3.12/dist-packages (from anyio<5,>=3.5.0->openai) (3.11)
-Requirement already satisfied: certifi in /usr/local/lib/python3.12/dist-packages (from httpx<1,>=0.23.0->openai) (2025.10.5)
-Requirement already satisfied: httpcore==1.* in /usr/local/lib/python3.12/dist-packages (from httpx<1,>=0.23.0->openai) (1.0.9)
-Requirement already satisfied: h11>=0.16 in /usr/local/lib/python3.12/dist-packages (from httpcore==1.*->httpx<1,>=0.23.0->openai) (0.16.0)
-Requirement already satisfied: annotated-types>=0.6.0 in /usr/local/lib/python3.12/dist-packages (from pydantic<3,>=1.9.0->openai) (0.7.0)
-Requirement already satisfied: pydantic-core==2.33.2 in /usr/local/lib/python3.12/dist-packages (from pydantic<3,>=1.9.0->openai) (2.33.2)
-Requirement already satisfied: typing-inspection>=0.4.0 in /usr/local/lib/python3.12/dist-packages (from pydantic<3,>=1.9.0->openai) (0.4.2)
-✅ 成功讀取 OPENAI_API_KEY。
-✅ OpenAI 客戶端初始化完成。
+### 執行環境與操作說明 (Colab 專用)
 
-================================================================================
-                       【Part A-1: TF-IDF 文本相似度計算】
-================================================================================
+本程式碼已作為 Colab Notebook (.ipynb) 檔案提交，助教無需在本地環境安裝大量套件。
 
-1. 手動計算 TF-IDF 相似度 (Doc 1 vs Doc 4):
-   相似度得分: 0.1274
+#### 1. 必要依賴
+本 Notebook 內部已包含所有依賴的安裝指令：
+- **基礎套件:** `scikit-learn`, `jieba`, `numpy`, `TCSP`
+- **AI 依賴:** `openai`
+（執行時，請確保所有的 `!pip install` 指令區塊已運行。）
 
-2. Scikit-learn TF-IDF 相似度矩陣 (5x5):
-[[1.         0.18270139 0.04170053 0.2944224  0.03759802]
- [0.18270139 1.         0.03808984 0.34052565 0.03434255]
- [0.04170053 0.03808984 1.         0.         0.20950992]
- [0.2944224  0.34052565 0.         1.         0.07719388]
- [0.03759802 0.03434255 0.20950992 0.07719388 1.        ]]
+#### 2. API Key 設定 (關鍵步驟)
+[cite_start]為了安全起見，OpenAI API Key 必須透過 Colab Secrets 傳入 [cite: 536]。
 
-================================================================================
-                     【Part A-2: 基於規則的文本分類】
-================================================================================
+1.  開啟此 Colab Notebook。
+2.  點擊左側欄的「🔑 **Secrets** (密鑰)」圖標。
+3.  新增一個密鑰，名稱必須設定為：`OPENAI_API_KEY`。
+4.  將你的 OpenAI API Key 貼入值欄位。
 
-1. 情感分類器:
-   - 文本: '這家餐廳的牛肉麵真的太好吃了,...' -> 情感: 正面
-   - 文本: '最新的AI技術突破讓人驚艷,深...' -> 情感: 正面
-   - 文本: '這部電影劇情空洞,演技糟糕,完...' -> 情感: 負面
-   - 文本: '每天慢跑5公里,配合適當的重訓...' -> 情感: 正面
+#### 3. 運行步驟
+請依照 Notebook 中的程式碼區塊順序執行：
+1.  執行**環境設置與 Client 初始化**區塊 (檢查 API Key 連線)。
+2.  依序執行 **Part A-1, A-2, A-3** 的實作區塊 (傳統方法計算)。
+3.  依序執行 **Part B-1, B-2, B-3** 的實作區塊 (現代 AI 呼叫)。
+4.  執行 **Part C-1 量化比較運行**區塊 (獲取最終準確率和時間數據)。
 
-2. 主題分類器:
-   - 文本: '這家餐廳的牛肉麵真的太好吃了,...' -> 主題: 美食
-   - 文本: '最新的AI技術突破讓人驚艷,深...' -> 主題: 科技
-   - 文本: '這部電影劇情空洞,演技糟糕,完...' -> 主題: 其他/無法分類
-   - 文本: '每天慢跑5公里,配合適當的重訓...' -> 主題: 運動
+---
 
-================================================================================
-                     【Part A-3: 統計式自動摘要】
-================================================================================
+### 作業成果展示
 
-原文長度: 411 字
-摘要內容 (Ratio=30%, 116 字):
-人工智慧(AI)的發展正在深刻改變我們的生活方式。透過分析
-大量的醫療影像和病歷資料,AI能夠發現人眼容易忽略的細節,為患者提供更好
-的治療方案。教育方面,AI個人化學習系統能夠根據每個學生的學習進度和特點,提供客製化
-的教學內容。
+#### 1. [額外加分] 效能優化 (快取機制)
+[cite_start]程式碼實作了快取機制，以避免重複呼叫 API 造成費用浪費 [cite: 465]。
+- **實測效果:** 第二次呼叫狀態為 `Cache Hit`，時間顯著低於第一次 `API Call` 時間，證明快取實作成功。
 
-================================================================================
-                       【Part B-1: 語意相似度計算】
-================================================================================
-語意相似度計算 (GPT-4o, Text A vs Text B): 78 / 100
-處理時間: 1.1534 秒
+#### 2. [額外加分] 詞雲圖視覺化
+成功對 Part A-3 的文章進行視覺化分析，展示了文章高頻詞彙的分佈。
+![詞雲圖](請將詞雲圖圖片檔案上傳並在此處填寫路徑，例如：`word_cloud.png`)
 
-================================================================================
-                       【Part B-2: AI 文本分類】
-================================================================================
-
-AI 文本分類 (GPT-4o, Text C):
-{
-    "sentiment": "負面",
-    "topic": "娛樂",
-    "confidence": 0.95
-}
-處理時間: 0.7240 秒
-
-================================================================================
-                       【Part B-3: AI 自動摘要】
-================================================================================
-
---- 輸出詳情 ---
-
-[ 摘要內容 ]
---------------------------------------------------------------------------------
-人工智慧(AI)深刻改變生活方式，從智慧鬧鐘、通勤規劃到工作輔助均可見其應用。在醫療領域，它提高了診斷準確性和效率，能分析大量影像和資料提供更佳治療方
-案。在教育方面，AI個人化學習系統可依學生進度提供客製教學，提升學習效率與趣味。然而，AI發展也帶來就業、隱私和倫理挑戰，威脅工作機會並涉及數據安全和
-決策透明問題。因此，推動AI的同時需建立法律和倫理準則，確保AI促進人類福祉。
---------------------------------------------------------------------------------
-處理時間: 5.6020 秒
-
-================================================================================
-                     【Part C-1: 量化比較運行】
-================================================================================
-
-傳統方法總處理時間 (4個文本): 0.001212 秒
-AI 方法總處理時間 (4個文本): 4.328504 秒
-
-情感分類傳統準確率: 0.50
-情感分類 AI 準確率: 0.75
-
-================================================================================
-                       【額外加分 1: 詞雲視覺化】
-================================================================================
-/usr/local/lib/python3.12/dist-packages/IPython/core/pylabtools.py:151: UserWarning: Glyph 25991 (\N{CJK UNIFIED IDEOGRAPH-6587}) missing from font(s) DejaVu Sans.
-  fig.canvas.print_figure(bytes_io, **kw)
-/usr/local/lib/python3.12/dist-packages/IPython/core/pylabtools.py:151: UserWarning: Glyph 31456 (\N{CJK UNIFIED IDEOGRAPH-7AE0}) missing from font(s) DejaVu Sans.
-  fig.canvas.print_figure(bytes_io, **kw)
-/usr/local/lib/python3.12/dist-packages/IPython/core/pylabtools.py:151: UserWarning: Glyph 35422 (\N{CJK UNIFIED IDEOGRAPH-8A5E}) missing from font(s) DejaVu Sans.
-  fig.canvas.print_figure(bytes_io, **kw)
-/usr/local/lib/python3.12/dist-packages/IPython/core/pylabtools.py:151: UserWarning: Glyph 24409 (\N{CJK UNIFIED IDEOGRAPH-5F59}) missing from font(s) DejaVu Sans.
-  fig.canvas.print_figure(bytes_io, **kw)
-/usr/local/lib/python3.12/dist-packages/IPython/core/pylabtools.py:151: UserWarning: Glyph 38971 (\N{CJK UNIFIED IDEOGRAPH-983B}) missing from font(s) DejaVu Sans.
-  fig.canvas.print_figure(bytes_io, **kw)
-/usr/local/lib/python3.12/dist-packages/IPython/core/pylabtools.py:151: UserWarning: Glyph 29575 (\N{CJK UNIFIED IDEOGRAPH-7387}) missing from font(s) DejaVu Sans.
-  fig.canvas.print_figure(bytes_io, **kw)
-/usr/local/lib/python3.12/dist-packages/IPython/core/pylabtools.py:151: UserWarning: Glyph 38642 (\N{CJK UNIFIED IDEOGRAPH-96F2}) missing from font(s) DejaVu Sans.
-  fig.canvas.print_figure(bytes_io, **kw)
-/usr/local/lib/python3.12/dist-packages/IPython/core/pylabtools.py:151: UserWarning: Glyph 22294 (\N{CJK UNIFIED IDEOGRAPH-5716}) missing from font(s) DejaVu Sans.
-  fig.canvas.print_figure(bytes_io, **kw)
-
-
-================================================================================
-                       【額外加分 2: 效能優化 (快取)】
-================================================================================
-
-文本: '最新的AI技術突破讓...'
-第一次呼叫: 狀態=API Call, 時間=0.8664 秒
-第二次呼叫: 狀態=Cache Hit, 時間=0.0001 秒
-
-結論: Cache Hit 的時間應該遠小於第一次 API Call 的時間。
+---
+**提交文件:**
+- `學號_hw2.ipynb` (Colab Notebook 程式碼)
+- `report.md` 或 PDF 報告 (Part C-2 質性分析和所有截圖)
