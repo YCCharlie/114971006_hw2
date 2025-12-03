@@ -1,0 +1,18 @@
+{
+    "similarity": {
+        "manual_accuracy_score": 0.3,
+        "ai_accuracy_score": 0.75
+    },
+    "classification": {
+        "traditional_time_total": 0.001199,
+        "ai_time_total": 3.204709,
+        "sentiment_accuracy_traditional": 0.5,
+        "sentiment_accuracy_ai": 0.75
+    },
+    "summarization": {
+        "traditional_info_retention": "60%",
+        "ai_info_retention": "90%",
+        "traditional_fluency": 3,
+        "ai_fluency": 5
+    }
+}
